@@ -1,3 +1,10 @@
+export function getProduct(productId){
+  const matchingItem = products.find((product) => {
+      return product.id === productId;
+    });
+  return matchingItem;
+}
+
 export const products = [
   {
     id: "e43638ce-6aa0-4b85-b27f-e1d07eb678c6",
