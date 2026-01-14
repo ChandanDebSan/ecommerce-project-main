@@ -209,3 +209,13 @@
   margin-top: 20px;
   margin-bottom: 19px;
 }
+
+.change-quantity-input{
+  width: 7ch;
+  padding: 4px 6px;
+  font-size: 14px;
+  margin-right: 6px;
+
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
