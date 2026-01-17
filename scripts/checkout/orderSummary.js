@@ -53,7 +53,7 @@ export function renderOrderSummary() {
 `;
   });
 
-  document.querySelector('.order-summary').innerHTML = cartHtml;
+  document.querySelector('.js-order-summary').innerHTML = cartHtml;
   changeCheckout();
 
   function updateDeliveryDate(cartItem) {
@@ -104,7 +104,8 @@ export function renderOrderSummary() {
     link.addEventListener('click', () => {
       const productId = link.dataset.productId;
       removefromCart(productId);
-      document.querySelector(`.js-cart-${productId}`).remove();
+      renderPaymentSummary();
+      renderOrderSummary();
       changeCheckout();
     });
 
@@ -115,6 +116,7 @@ export function renderOrderSummary() {
     const checkoutCount = document.querySelector('.js-checkout-count');
     if (checkoutCount) {
       checkoutCount.innerHTML = `${updateCartQuantity()}`;
+      renderPaymentSummary();
     }
   }
 
@@ -147,6 +149,7 @@ export function renderOrderSummary() {
       };
 
       changeQuantity(productId, newQuantity);
+      renderPaymentSummary();
 
       container.querySelector('.quantity-label').innerHTML = newQuantity;
 

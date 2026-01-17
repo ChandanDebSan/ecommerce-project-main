@@ -1,5 +1,5 @@
 
-import { cart } from '../../data/cart.js'
+import { cart, updateCartQuantity } from '../../data/cart.js'
 import { getProduct } from '../../data/products.js'
 import { getDeliveryOption } from '../../scripts/deliveryOptions.js'
 
@@ -24,7 +24,7 @@ import { convertCents } from '../../scripts/money.js'
       </div>
 
       <div class="payment-summary-row">
-        <div>Items (3):</div>
+        <div>Items (${updateCartQuantity()}):</div>
         <div class="payment-summary-money">$${convertCents(productPriceCents)}</div>
       </div>
 
