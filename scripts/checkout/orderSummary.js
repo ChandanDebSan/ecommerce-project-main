@@ -1,18 +1,19 @@
-import { cart, changeQuantity, removefromCart, updateCartQuantity, updateDeliveryOption } from '../../data/cart.js'
-import { getProduct, products } from '../../data/products.js'
+import { cart, changeQuantity, loadFromStorage, removefromCart, updateCartQuantity, updateDeliveryOption } from '../../data/cart.js'
+import { getProduct, loadProducts, products } from '../../data/products.js'
 import dayjs from 'https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js'
 import { deliverOptions, getDeliveryOption } from '../../scripts/deliveryOptions.js'
 import { renderPaymentSummary } from './paymentSummary.js';
 
+
 export function renderOrderSummary() {
   let cartHtml = ``;
-
+  
   cart.forEach((cartItem) => {
     
     const matchingItem = getProduct(cartItem.productId);
 
-
-    cartHtml += `<div class="cart-item-container js-cart-${matchingItem.id}">
+   
+    cartHtml += `<div class="cart-item-container js-cart-${matchingItem.id} js-cart-item-container">
             <div class="delivery-date">
               Delivery date: ${updateDeliveryDate(cartItem)}
             </div>
@@ -28,14 +29,15 @@ export function renderOrderSummary() {
                 <div class="product-price">
                   $${(matchingItem.priceCents / 100).toFixed(2)}
                 </div>
-                <div class="product-quantity">
+                <div class="product-quantity js-product-quantity-${matchingItem.id}">
                   <span>
                     Quantity: <span class="quantity-label">${cartItem.quantity}</span>
                   </span>
                   <span class="update-quantity-link link-primary" data-product-id="${matchingItem.id}">
                     Update 
                   </span>
-                  <span class="delete-quantity-link link-primary js-delete-link" data-product-id="${matchingItem.id}">
+                  <span class="delete-quantity-link link-primary js-delete-link
+                  js-delete-link-${matchingItem.id}" data-product-id="${matchingItem.id}">
                     Delete
                   </span>
                 </div>
@@ -122,7 +124,7 @@ export function renderOrderSummary() {
 
 
 
-  document.querySelector('.order-summary').addEventListener('click', (e) => {
+  document.querySelector('.js-order-summary').addEventListener('click', (e) => {
 
     if (e.target.classList.contains('update-quantity-link')) {
       const productId = e.target.dataset.productId;
@@ -175,4 +177,4 @@ export function renderOrderSummary() {
   });
 }
 
-renderOrderSummary();
+//renderOrderSummary();

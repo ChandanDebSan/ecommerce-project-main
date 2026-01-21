@@ -1,11 +1,126 @@
-export function getProduct(productId){
-  const matchingItem = products.find((product) => {
-      return product.id === productId;
-    });
-  return matchingItem;
+import {convertCents} from '../scripts/money.js'
+
+export function getProduct(productId) {
+  let matchingProduct;
+  loadProducts();
+  products.forEach((product) => {
+    if (product.id === productId) {
+      matchingProduct = product;
+    }
+  });
+
+  return matchingProduct;
 }
 
-export const products = [
+
+
+export class Product{
+  id;
+  image;
+  name;
+  rating;
+  priceCents;
+
+  constructor(productDetails){
+    this.id = productDetails.id;
+    this.image =  productDetails.image;
+    this.name = productDetails.name;
+    this.rating = productDetails.rating;
+    this.priceCents = productDetails.priceCents;
+    
+  }
+
+  getStarsUrl(){
+    return `images/ratings/rating-${this.rating.stars * 10}.png`;
+  }
+
+  getPrice(){
+    
+    return `${convertCents(this.priceCents)}`;
+  }
+
+  extraInfoHTML(){
+    return ``;
+  }
+}
+
+export class Clothing extends Product{
+  sizeChartLink;
+  constructor(productDetails){
+    super(productDetails);
+    this.sizeChartLink = productDetails.sizeChartLink;
+  }
+
+  extraInfoHTML(){
+    return `<a href="${this.sizeChartLink}" target="_blank"> Size Chart</a>`;
+  }
+}
+
+export class Appliance extends Product{
+  instructionLink;
+  warrantyLink;
+  constructor(productDetails){
+    super(productDetails);
+    this.instructionLink = '../images/appliance-instructions.png'
+    this.warrantyLink = '../images/appliance-warranty.png';
+  }
+   extraInfoHTML(){
+    return `<a href="${this.instructionLink}" target="_blank">Instruction Link</a><a href="${this.warrantyLink}" target="_blank">Warranty Link</a>`;
+  }
+}
+
+export let products = [];
+
+/*export function loadProductsEach(){
+  const promise = fetch(
+    'https://supersimplebackend.dev/products'
+  ).then((response) => {
+    return response.json();
+  }).then((productData) => {
+    products = productData.map((productDetails) =>{
+      if(productDetails.type === 'clothing'){
+        return new Clothing(productDetails);
+      }else if(productDetails.keywords.includes('appliances')){
+        return new Appliance(productDetails);
+      }
+        return new Product(productDetails);
+      
+    }).catch((error) => {
+      console.log('failed loading products');
+    });
+  });
+  return promise;
+}*/
+
+export function loadProducts(fun) {
+  const xhr = new XMLHttpRequest();
+
+  xhr.addEventListener('load', () => {
+    products = JSON.parse(xhr.response).map((productDetails) => {
+      if (productDetails.type === 'clothing') {
+        return new Clothing(productDetails);
+      }else if(productDetails.keywords.includes('appliances')){
+        return new Appliance(productDetails);
+      }
+      return new Product(productDetails);
+    });
+
+    console.log('load products');
+
+    if (typeof fun === 'function') {
+      fun();
+    }
+  });
+
+  xhr.addEventListener('error', (error) => {
+    console.log('Unexpected error. Please try again later.');
+  });
+
+  xhr.open('GET', 'https://supersimplebackend.dev/products');
+  xhr.send();
+}
+
+/*export const productsHelp = [
   {
     id: "e43638ce-6aa0-4b85-b27f-e1d07eb678c6",
     image: "images/products/athletic-cotton-socks-6-pairs.jpg",
@@ -468,4 +583,4 @@ export const products = [
     priceCents: 1899,
     keywords: ["kitchen", "kitchen towels", "tissues"]
   }
-];
+];*/

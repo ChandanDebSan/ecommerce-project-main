@@ -1,10 +1,11 @@
 
-import { cart, updateCartQuantity } from '../../data/cart.js'
+import { cart, loadFromStorage, updateCartQuantity } from '../../data/cart.js'
 import { getProduct } from '../../data/products.js'
 import { getDeliveryOption } from '../../scripts/deliveryOptions.js'
 
 import { convertCents } from '../../scripts/money.js'
  export function renderPaymentSummary() {
+  
   let productPriceCents = 0;
   let shippingPriceCents = 0;
   cart.forEach((cartItem) => {
