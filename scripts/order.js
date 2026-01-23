@@ -3,6 +3,7 @@ import { convertCents } from '../scripts/money.js'
 import { calculateTotal } from './checkout/paymentSummary.js';
 import { getDeliveryOption } from '../../scripts/deliveryOptions.js'
 import dayjs from 'https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js'
+import { addToCart, cart, changeCheckout, saveCart } from '../data/cart.js';
 
 function getArrivalDate(deliveryOption, placedDate) {
   const deliver = getDeliveryOption(deliveryOption);
@@ -21,6 +22,38 @@ export class Order {
     this.quantity = cart.quantity;
     this.deliverOptionId = cart.deliverOptionId;
   }
+  buyAgain() {
+    const addedText = document.querySelector(`.js-buy-again-button-${this.productId}`);
+    let matchingItem;
+    clearTimeout(addedText.timeoutId);
+    addedText.classList.add('show-added-msg');
+    addedText.timeoutId = setTimeout(() => {
+      addedText.classList.remove('show-added-msg');
+    }, 1000);
+
+    cart.forEach((item) => {
+      if (this.productId === item.productId) {
+        matchingItem = item;
+      }
+    });
+
+    let selecQuantity = this.quantity;
+
+    if (matchingItem) {
+      matchingItem.quantity += selecQuantity;
+
+
+    } else {
+      cart.push({
+        productId: this.productId,
+        quantity: selecQuantity,
+        deliverOptionId: '1'
+      });
+
+    }
+    saveCart();
+  
+  }
 
 }
 
@@ -30,7 +63,7 @@ export class OrderItems {
   placedDate;
   constructor() {
     this.orderArr = [];
-    this.orderId = '27cba69d-4c3d-4098-b42d-ac7fa62b7664'; //temp
+    this.orderId = crypto.randomUUID();
     this.placedDate = dayjs().format();
   }
   addOrder(order) {
@@ -60,14 +93,16 @@ export class OrderItems {
                 ${matching.name}
               </div>
               <div class="product-delivery-date">
-                Arriving on: ${getArrivalDate(orderelement.deliverOptionId , this.placedDate)}
+                Arriving on: ${getArrivalDate(orderelement.deliverOptionId, this.placedDate)}
               </div>
               <div class="product-quantity">
                 Quantity: ${orderelement.quantity}
               </div>
-              <button class="buy-again-button button-primary">
+              <button class="buy-again-button button-primary js-buy-again-button-${orderelement.productId}" 
+              data-product-id="${orderelement.productId}"
+              data-order-id="${this.orderId}">
                 <img class="buy-again-icon" src="images/icons/buy-again.png" />
-                <span class="buy-again-message">Add to Cart</span>
+                <span class="buy-again-message">Buy It Again</span>
               </button>
             </div>
 
@@ -159,5 +194,17 @@ export function renderOrderPage() {
   );
 
   document.querySelector('.js-order-container').innerHTML = displayHtml;
+  document.querySelectorAll('.buy-again-button').forEach((button) => {
+    button.addEventListener('click' , () => {
+      const productId = button.dataset.productId;
+      const orderId = button.dataset.orderId;
+      const order = orderDB.find(o => o.orderId === orderId);
+      const item = order.orderArr.find(o => o.productId === productId);
+      if(item) item.buyAgain();
+      changeCheckout();
+      renderOrderPage();
+    });
+  });
+
 }
 
