@@ -71,7 +71,7 @@ export class Appliance extends Product{
 
 export let products = [];
 
-/*export function loadProductsEach(){
+export function loadProductsEach(){
   const promise = fetch(
     'https://supersimplebackend.dev/products'
   ).then((response) => {
@@ -85,12 +85,12 @@ export let products = [];
       }
         return new Product(productDetails);
       
-    }).catch((error) => {
+    })
+  }).catch((error) => {
       console.log('failed loading products');
-    });
-  });
+    });;
   return promise;
-}*/
+}
 
 export function loadProducts(fun) {
   const xhr = new XMLHttpRequest();

@@ -2,10 +2,10 @@
 import { cart, loadFromStorage, updateCartQuantity } from '../../data/cart.js'
 import { getProduct } from '../../data/products.js'
 import { getDeliveryOption } from '../../scripts/deliveryOptions.js'
-
+import { Order, orderDB, OrderItems } from '../../scripts/order.js'
 import { convertCents } from '../../scripts/money.js'
- export function renderPaymentSummary() {
-  
+export function renderPaymentSummary() {
+
   let productPriceCents = 0;
   let shippingPriceCents = 0;
   cart.forEach((cartItem) => {
@@ -54,7 +54,37 @@ import { convertCents } from '../../scripts/money.js'
       </button>
     </div>`;
 
-    document.querySelector('.js-payment-summary').innerHTML = paymentSummaryHtml;
-   
+  document.querySelector('.js-payment-summary').innerHTML = paymentSummaryHtml;
+
+  document.querySelector('.place-order-button').addEventListener('click', () => {
+    const storedOrders = JSON.parse(localStorage.getItem('orderDB')) || [];
+
+    const ordercontainer = new OrderItems();
+    cart.forEach(item => {
+      ordercontainer.addOrder(new Order(item));
+    });
+
+    storedOrders.push(ordercontainer);
+
+    localStorage.setItem('orderDB', JSON.stringify(storedOrders));
+  });
+
+}
+
+export function calculateTotal(cart) {
+  let productPriceCents = 0;
+  let shippingPriceCents = 0;
+  cart.forEach((cartItem) => {
+    const product = getProduct(cartItem.productId);
+    productPriceCents += product.priceCents * cartItem.quantity;
+
+    const deliveryOption = getDeliveryOption(cartItem.deliverOptionId);
+    shippingPriceCents += deliveryOption.priceCents;
+  });
+
+  const totalBeforeTax = productPriceCents + shippingPriceCents;
+  const taxCents = totalBeforeTax * 0.1;
+  const totalCents = totalBeforeTax + taxCents;
+  return totalCents;
 }
 
