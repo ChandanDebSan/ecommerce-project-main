@@ -1,11 +1,29 @@
 import { cart, addToCart, updateCartQuantity } from '../data/cart.js'
-import { loadProducts, products, Product, Clothing } from '../data/products.js'
+import { loadProducts, products, Product, Clothing, loadProductsEach } from '../data/products.js'
 
-loadProducts(renderProductsGrid);
+await loadProductsEach();
+searchItem();
+renderProductsGrid();
 
 function renderProductsGrid() {
+  const url = new URL(window.location.href);
+  const searchQuery = url.searchParams.get('search');
+
+  const filterproducts = getFilteredProducts(searchQuery);
+
+  if (filterproducts.length === 0) {
+    document.querySelector('.show-products').innerHTML =
+      `<div class="no-results">
+      <img src="/images/sad-dog.png" class="no-results-img" />
+      <h2>No Products Found</h2>
+      <p>Try Searching for something else</p>
+    </div>`;
+    return;
+  }
+
+
   let productsHTML = ``;
-  products.forEach((element) => {
+  filterproducts.forEach((element) => {
     productsHTML += `<div class="product-container">
           <div class="product-image-container">
             <img class="product-image"
@@ -79,7 +97,56 @@ function renderProductsGrid() {
       updateCartIcon();
     });
   });
+
+
+
 }
 
+export function searchItem() {
 
+  const form = document.querySelector('.middle-section');
+  const input = document.querySelector('.search-bar');
+  const button = document.querySelector('.search-button');
+  console.log(input.value);
+  button.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    const searchValue = input.value.trim();
+    if (!searchValue) return;
+    const encoded = encodeURIComponent(searchValue);
+
+    window.location.href = `index.html?search=${encoded}`
+  });
+
+  input.addEventListener('keydown', (e) => {
+
+    if (e.key === 'Enter') {
+      e.preventDefault();
+
+      const searchValue = input.value.trim();
+      if (!searchValue) return;
+      const encoded = encodeURIComponent(searchValue);
+
+      window.location.href = `index.html?search=${encoded}`
+    }
+  });
+
+}
+
+function getFilteredProducts(searchQuery) {
+  if (!searchQuery) return products;
+
+  const lowerSearch = searchQuery.toLowerCase();
+
+  return products.filter(product => {
+    const nameMatch = product.name.toLowerCase().includes(lowerSearch);
+
+    const keywordMatch = product.keywords?.some(keyword =>
+      keyword.toLowerCase().includes(lowerSearch)
+    );
+
+    return nameMatch || keywordMatch;
+  });
+
+}
 

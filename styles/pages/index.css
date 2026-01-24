@@ -157,3 +157,30 @@
   height: 34px;
   margin-top: 1px;
 }
+
+.home-page .no-results {
+  grid-column: 1 / -1;
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.home-page .no-results-img {
+  width: 180px;
+  margin-bottom: 20px;
+  opacity: 0.9;
+}
+
+.home-page .no-results h2 {
+  font-size: 28px;
+  margin: 0;
+}
+
+.home-page .no-results p {
+  font-size: 16px;
+  color: gray;
+  margin-top: 8px;
+}

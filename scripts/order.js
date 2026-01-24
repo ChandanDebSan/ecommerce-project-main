@@ -5,7 +5,7 @@ import { getDeliveryOption } from '../../scripts/deliveryOptions.js'
 import dayjs from 'https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js'
 import { addToCart, cart, changeCheckout, saveCart } from '../data/cart.js';
 
-function getArrivalDate(deliveryOption, placedDate) {
+export function getArrivalDate(deliveryOption, placedDate) {
   const deliver = getDeliveryOption(deliveryOption);
   const days = deliver.deliveryDays;
   return dayjs(placedDate)
@@ -107,7 +107,7 @@ export class OrderItems {
             </div>
 
             <div class="product-actions">
-              <a href="tracking.html">
+              <a href="tracking.html?orderId=${this.orderId}&productId=${orderelement.productId}" >
                 <button class="track-package-button button-secondary">
                   Track package
                 </button>
